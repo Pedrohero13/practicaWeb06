@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Pagina Inicio Facelets</title>
+    </h:head>
+    <h:body>
+
+
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+
+
+            <p:commandButton value="Nuevo" icon="pi pi-user" 
+                             update=":dialogs:manage-product-content" oncomplete="PF('manageProductDialog').show()"
+                             styleClass="ui-button-raised ui-button-flat" style="margin-right: .5rem">
+                <p:resetInput target=":dialogs:manage-product-content" />
+
+            </p:commandButton>
+
+            <p:inputText placeholder="Clave Empleado" value="#{empleadoBean.clave}" style="margin: .5rem"/>
+            <p:commandButton value="Buscar" icon="pi pi-search" 
+                             update=":dialogs:manage-product-update" oncomplete="PF('updateDialog').show()"
+                             styleClass="ui-button-raised ui-button-flat" style="margin-right: .5rem"
+                             action="#{empleadoBean.buscar()}"
+                             >
+                <p:resetInput target=":dialogs:manage-product-update" />
+
+            </p:commandButton>
+
+
+
+            <div class="card">
+                <p:dataTable id="dt-products" widgetVar="dtProducts" var="empleado" value="#{empleadoBean.empleados}"
+                             reflow="true" styleClass="products-table" 
+                             rowKey="#{empleado.clave}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">Empleados</span>
+
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="Clave">
+                        <h:outputText value="#{empleado.clave}" />
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{empleado.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Dirección">
+                        <h:outputText value="#{empleado.direccion}" />
+                    </p:column>
+
+                    <p:column headerText="Telefono">
+                        <h:outputText value="#{empleado.telefono}" />
+                    </p:column>}
+                    <p:column headerText="Modificar">
+
+                        <p:commandButton value="Modificar" icon="pi pi-user-edit" 
+                                         update=":dialogs:manage-product-update" oncomplete="PF('updateDialog').show()"
+                                         styleClass="ui-button-raised ui-button-warning ui-button-flat" style="margin-right: .5rem">
+                            <f:setPropertyActionListener value="#{empleado}" target="#{empleadoBean.selectEmpleado}" />
+                            <p:resetInput target=":dialogs:manage-product-update" />
+                        </p:commandButton>
+
+
+                    </p:column>
+                    <p:column headerText="Eliminar">
+
+                        <p:commandButton value = "Eliminar" class="ui-button-raised ui-button-danger ui-button-flat" icon="pi pi-trash"
+                                         process="@this"
+                                         oncomplete="PF('deleteProductDialog').show()">
+                            <f:setPropertyActionListener value="#{empleado}" target="#{empleadoBean.selectEmpleado}" />
+                        </p:commandButton>
+
+                    </p:column>
+
+
+                </p:dataTable>
+            </div>
+        </h:form>
+        <h:form id="dialogs">
+
+            <p:dialog header="Nuevo Empleado" showEffect="fade" modal="true" widgetVar="manageProductDialog"
+                      responsive="true">
+                <p:messages/>
+                <p:outputPanel id="manage-product-content" class="ui-fluid">
+                    <p:focus context="panel"/>
+                    <h:panelGrid id="panel" columns="3" cellpadding="7">
+                        <p:outputLabel for="username" value="Nombre"/>
+                        <p:inputText id="username" value="#{empleadoBean.nombre}" required="true" label="Firstname">
+                            <f:validateLength minimum="2"/>
+                        </p:inputText>
+                        <p:message for="username"/>
+
+                        <p:outputLabel for="email" value="Direccion"/>
+                        <p:inputText id="email" value="#{empleadoBean.direccion}" required="true" label="Surname"/>
+                        <p:message for="email"/>
+
+                        <p:outputLabel for="telefono" value="Telefono"/>
+                        <p:inputText id="telefono" value="#{empleadoBean.telefono}" required="true" label="telefono">
+                            <f:validateLength minimum="10"/>
+                        </p:inputText>
+                        <p:message for="telefono"/>
+                    </h:panelGrid>
+
+                    <p:toolbar>
+                        <p:toolbarGroup align="right">
+                            <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{empleadoBean.guardar()}"
+                                             update="manage-product-content" process="manage-product-content @this" style="margin: .5rem"
+                                             styleClass="ui-button-raised ui-button-success ui-button-flat"
+
+                                             />
+                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
+                                             styleClass="ui-button-raised ui-button-secondary ui-button-flat"  type="button" style="margin:  .5rem" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+
+
+                </p:outputPanel>
+
+
+            </p:dialog>
+
+            <p:dialog header="Modificar Empleado" showEffect="fade" modal="true" widgetVar="updateDialog"
+                      responsive="true">
+                <p:messages/>
+                <p:outputPanel  id="manage-product-update" class="ui-fluid">
+
+                    <p:focus context="update"/>
+                    <h:panelGrid id="update" columns="3" cellpadding="7">
+                        <p:outputLabel for="clave" value="Clave"/>
+                        <p:inputText id="clave" value="#{empleadoBean.selectEmpleado.clave}" required="true" label="Firstname" disabled="true">
+                            <f:validateLength minimum="2"/>
+                        </p:inputText>
+                        <p:message for="clave"/>
+
+                        <p:outputLabel for="userUpdate" value="Nombre"/>
+                        <p:inputText id="userUpdate" value="#{empleadoBean.selectEmpleado.nombre}" required="true" label="Firstname">
+                            <f:validateLength minimum="2"/>
+                        </p:inputText>
+                        <p:message for="userUpdate"/>
+
+                        <p:outputLabel for="updateDireccion" value="Direccion"/>
+                        <p:inputText id="updateDireccion" value="#{empleadoBean.selectEmpleado.direccion}" required="true" label="Surname"/>
+                        <p:message for="updateDireccion"/>
+
+                        <p:outputLabel for="updateTelefono" value="Telefono"/>
+                        <p:inputText id="updateTelefono" value="#{empleadoBean.selectEmpleado.telefono}" required="true" label="telefono">
+                            <f:validateLength minimum="10"/>
+                        </p:inputText>
+                        <p:message for="updateTelefono"/>
+                    </h:panelGrid>
+
+                    <p:toolbar>
+                        <p:toolbarGroup align="right">
+                            <p:commandButton value="Modificar" icon="pi pi-check" actionListener="#{empleadoBean.modificar()}"
+                                             update="manage-product-update" process="manage-product-update @this" style="margin: .5rem"
+                                             styleClass="ui-button-raised ui-button-success ui-button-flat"
+
+
+                                             />
+                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('updateDialog').hide()"
+                                             styleClass="ui-button-raised ui-button-secondary ui-button-flat"  type="button" style="margin:  .5rem" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+
+
+                </p:outputPanel>
+
+
+            </p:dialog>
+
+
+            <p:confirmDialog widgetVar="deleteProductDialog" showEffect="fade" width="300"
+                             message="Estas seguro que deseas eliminar?" header="Confirm" severity="warn">
+                <p:commandButton value="Eliminar" icon="pi pi-check" actionListener="#{empleadoBean.eliminar()}"
+                                 process="@this" 
+                                 oncomplete="PF('deleteProductDialog').hide()" />
+                <p:commandButton value="Cancelar" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deleteProductDialog').hide()" />
+            </p:confirmDialog>
+
+
+        </h:form>
+
+    </h:body>
+</html>
+
